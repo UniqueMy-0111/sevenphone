@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深渊与救赎 · 七美德灵魂审判</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Noto+Serif+SC:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* 圣殿日间模式 (古典羊皮纸与圣光金) */
+            --bg-grad: radial-gradient(circle at center, #fdfbf7 0%, #e2d9c8 100%);
+            --card-bg: rgba(250, 246, 240, 0.92);
+            --text-main: #2c221e;
+            --text-sub: #6e5a4f;
+            --gold: #9c7a3c;
+            --gold-glow: rgba(156, 122, 60, 0.3);
+            --crimson: #8b0000;
+            --border-col: #d4c4a8;
+            --opt-bg: #f5efe6;
+            --opt-hover: #ebe0d0;
+        }
+
+        [data-theme="dark"] {
+            /* 深渊哥特模式 (黑曜石、暗金与血色) */
+            --bg-grad: radial-gradient(circle at center, #1a0b12 0%, #07050a 100%);
+            --card-bg: rgba(16, 14, 20, 0.9);
+            --text-main: #e8e2d5;
+            --text-sub: #8c8275;
+            --gold: #d4af37;
+            --gold-glow: rgba(212, 175, 55, 0.4);
+            --crimson: #dc143c;
+            --border-col: #3a2e21;
+            --opt-bg: #18151c;
+            --opt-hover: #251b24;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        html { -webkit-text-size-adjust: 100%; overflow-x: hidden; }
+
+        body {
+            font-family: 'Noto Serif SC', serif;
+            background: var(--bg-grad);
+            color: var(--text-main);
+            min-height: 100vh;
+            min-height: 100dvh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 0.6s ease, color 0.4s ease;
+            overflow-x: hidden;
+        }
+
+        /* 哥特风格主容器 */
+        .gothic-frame {
+            width: 100%;
+            max-width: 620px;
+            background: var(--card-bg);
+            border: 2px solid var(--gold);
+            outline: 1px solid var(--border-col);
+            outline-offset: -8px;
+            padding: 40px 35px;
+            position: relative;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.8), 0 0 25px var(--gold-glow);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+        }
+
+        /* 四角哥特雕花装饰 */
+        .corner { position: absolute; width: 16px; height: 16px; border: 2px solid var(--gold); pointer-events: none; }
+        .c-tl { top: 6px; left: 6px; border-right: none; border-bottom: none; }
+        .c-tr { top: 6px; right: 6px; border-left: none; border-bottom: none; }
+        .c-bl { bottom: 6px; left: 6px; border-right: none; border-top: none; }
+        .c-br { bottom: 6px; right: 6px; border-left: none; border-top: none; }
+
+        .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid var(--border-col); padding-bottom: 12px; }
+        .brand { font-family: 'Cinzel', serif; font-size: 15px; letter-spacing: 2px; color: var(--gold); font-weight: 800; }
+        .theme-btn {
+            background: transparent; color: var(--gold); border: 1px solid var(--gold);
+            padding: 5px 12px; font-family: inherit; font-size: 12px; cursor: pointer;
+            transition: 0.3s; letter-spacing: 1px;
+        }
+        .theme-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 10px var(--gold-glow); }
+
+        /* ====== 1. 哥特封面样式 ====== */
+        #cover-screen { text-align: center; animation: fadeIn 0.8s ease; }
+        
+        .sigil-box { position: relative; width: 130px; height: 130px; margin: 10px auto 20px; display: flex; justify-content: center; align-items: center; }
+        .sigil-svg { width: 100%; height: 100%; fill: none; stroke: var(--gold); stroke-width: 1.5; animation: spin 30s linear infinite; filter: drop-shadow(0 0 8px var(--gold-glow)); }
+        .sigil-eye { position: absolute; font-size: 28px; color: var(--crimson); text-shadow: 0 0 12px var(--crimson); animation: pulse 3s infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.15); opacity: 1; } }
+
+        .cover-sub { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 4px; color: var(--crimson); margin-bottom: 5px; font-weight: 600; }
+        .cover-title { font-size: 32px; font-weight: 900; color: var(--gold); letter-spacing: 3px; text-shadow: 0 2px 10px var(--gold-glow); margin-bottom: 15px; }
+        .cover-lore { font-size: 14px; color: var(--text-sub); line-height: 1.8; margin-bottom: 25px; padding: 0 10px; }
+
+        .duality-grid {
+            display: grid; grid-template-columns: 1fr auto 1fr; gap: 6px 12px;
+            font-size: 12px; background: var(--opt-bg); padding: 15px; border: 1px solid var(--border-col);
+            margin-bottom: 30px; letter-spacing: 1px;
+        }
+        .sin-txt { text-align: right; color: var(--crimson); font-weight: 700; }
+        .vs-txt { color: var(--text-sub); font-family: 'Cinzel', serif; font-size: 10px; }
+        .vir-txt { text-align: left; color: var(--gold); font-weight: 700; }
+
+        .gothic-btn {
+            background: linear-gradient(45deg, #1a050a, #3a0d18);
+            color: var(--gold); border: 1px solid var(--gold);
+            padding: 16px 40px; font-size: 16px; font-family: inherit; font-weight: 700;
+            letter-spacing: 4px; cursor: pointer; transition: 0.4s; position: relative;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.2); width: 100%;
+        }
+        .gothic-btn:hover { background: var(--gold); color: #000; box-shadow: 0 0 25px var(--gold-glow); transform: translateY(-2px); }
+        /* ====== 手机端触控适配 ====== */
+        .gothic-btn, .opt-btn, .theme-btn, .prev-btn, .snapshot-close, .duality-grid {
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+        .opt-btn:active { transform: translateX(2px) scale(0.99); }
+        @media (max-width: 640px) {
+            body { padding: 12px; align-items: flex-start; }
+            .gothic-frame { padding: 28px 18px; outline-offset: -5px; box-shadow: 0 15px 40px rgba(0,0,0,0.7); }
+            .brand { font-size: 13px; }
+            .sigil-box { width: 110px; height: 110px; }
+            .cover-title { font-size: 26px; letter-spacing: 2px; }
+            .cover-lore { font-size: 13px; padding: 0; }
+            .duality-grid { font-size: 11px; padding: 12px 8px; gap: 6px 8px; letter-spacing: 0; }
+            .gothic-btn { padding: 14px 20px; font-size: 15px; letter-spacing: 3px; }
+            .q-title { font-size: 17px; margin-bottom: 20px; min-height: 48px; }
+            .opt-btn { padding: 13px 14px; font-size: 14px; }
+            .res-title { font-size: 26px; }
+            .res-desc { font-size: 14px; padding: 15px; }
+            .meta-grid { gap: 8px; }
+            .meta-card { padding: 10px 4px; }
+            .meta-val { font-size: 12px; }
+            .radar-box { width: 160px; height: 160px; }
+            .btn-group { flex-direction: column; }
+        }
+        @media (max-width: 380px) {
+            .meta-grid { grid-template-columns: 1fr; }
+            .meta-card { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; }
+            .meta-label { margin-bottom: 0; }
+        }
+
+        /* ====== 2. 答题区样式 ====== */
+        #quiz-screen { display: none; }
+        .progress-info { display: flex; justify-content: space-between; font-size: 12px; color: var(--gold); margin-bottom: 6px; font-family: 'Cinzel', serif; letter-spacing: 1px; }
+        .progress-track { width: 100%; height: 4px; background: var(--border-col); margin-bottom: 30px; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, var(--crimson), var(--gold)); width: 5%; transition: width 0.4s ease; box-shadow: 0 0 8px var(--gold); }
+
+        .quiz-view { transition: opacity 0.25s ease, transform 0.25s ease; }
+        .fade-out { opacity: 0; transform: translateY(10px); }
+        
+        .q-title { font-size: 20px; font-weight: 700; line-height: 1.5; margin-bottom: 25px; min-height: 60px; color: var(--text-main); }
+        .options-list { display: flex; flex-direction: column; gap: 12px; }
+
+        .opt-btn {
+            background: var(--opt-bg); border: 1px solid var(--border-col);
+            padding: 15px 18px; color: var(--text-main); font-family: inherit; font-size: 15px;
+            text-align: left; cursor: pointer; transition: 0.25s; display: flex; align-items: center; line-height: 1.5;
+        }
+        .opt-btn:hover, .opt-btn.selected {
+            border-color: var(--gold); background: var(--opt-hover);
+            box-shadow: inset 3px 0 0 var(--gold), 0 4px 12px rgba(0,0,0,0.2);
+            transform: translateX(4px);
+        }
+        .opt-num { font-family: 'Cinzel', serif; color: var(--gold); font-weight: bold; margin-right: 14px; font-size: 14px; }
+
+        .nav-footer { margin-top: 25px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-col); padding-top: 15px; }
+        .prev-btn { background: none; border: none; color: var(--text-sub); cursor: pointer; font-family: inherit; font-size: 13px; transition: 0.2s; }
+        .prev-btn:hover { color: var(--gold); }
+
+        /* ====== 3. 审判结果页样式 ====== */
+        #result-screen { display: none; text-align: center; animation: fadeIn 0.8s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+        
+        .res-badge { font-family: 'Cinzel', serif; font-size: 12px; letter-spacing: 3px; color: var(--text-sub); }
+        .res-title { font-size: 34px; font-weight: 900; color: var(--gold); margin: 8px 0; text-shadow: 0 0 15px var(--gold-glow); letter-spacing: 2px; }
+        .sin-suppressed { display: inline-block; font-size: 13px; color: #fff; background: var(--crimson); padding: 4px 12px; letter-spacing: 1px; margin-bottom: 20px; box-shadow: 0 0 10px var(--crimson); }
+        .res-desc { font-size: 15px; color: var(--text-main); line-height: 1.8; margin-bottom: 25px; background: var(--opt-bg); padding: 20px; border: 1px solid var(--gold); text-align: justify; }
+
+        .stat-row { margin-bottom: 10px; text-align: left; }
+        .stat-label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; color: var(--text-sub); }
+        .stat-bar-bg { width: 100%; height: 6px; background: var(--border-col); }
+        .stat-bar-fill { height: 100%; background: var(--gold); width: 0; transition: width 1s ease; box-shadow: 0 0 5px var(--gold); }
+    /* ====== 新增：豪华结果页样式 ====== */
+.tarot-header {
+    border: 1px solid var(--gold);
+    background: linear-gradient(180deg, rgba(212,175,55,0.08) 0%, transparent 100%);
+    padding: 25px 15px 20px;
+    position: relative;
+    margin: 15px 0 20px;
+}
+.soul-rank {
+    font-family: 'Cinzel', serif; font-size: 11px; color: var(--gold);
+    letter-spacing: 3px; border: 1px solid var(--gold); padding: 3px 12px;
+    background: var(--card-bg); position: absolute; top: -11px; left: 50%;
+    transform: translateX(-50%); white-space: nowrap;
+}
+.meta-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+.meta-card { background: var(--opt-bg); border: 1px solid var(--border-col); padding: 12px 6px; position: relative; }
+.meta-card::after { content: '❖'; position: absolute; top: 2px; right: 5px; font-size: 9px; color: var(--gold); opacity: 0.4; }
+.meta-label { font-size: 11px; color: var(--text-sub); margin-bottom: 5px; }
+.meta-val { font-size: 13px; color: var(--gold); font-weight: 700; }
+
+.Visual-split { display: grid; grid-template-columns: 1fr 1.2fr; gap: 15px; align-items: center; margin-bottom: 20px; background: var(--opt-bg); padding: 15px; border: 1px solid var(--border-col); }
+@media (max-width: 520px) { .Visual-split { grid-template-columns: 1fr; } }
+.radar-box { width: 180px; height: 180px; margin: 0 auto; }
+
+.quote-box {
+    font-style: italic; font-size: 14px; color: var(--gold); margin-bottom: 25px;
+    padding: 12px; border-top: 1px dashed var(--border-col); border-bottom: 1px dashed var(--border-col);
+    letter-spacing: 1px; background: rgba(0,0,0,0.15);
+}
+.btn-group { display: flex; gap: 12px; }
+/* ====== 新增：灵魂拓印(截图弹窗)样式 ====== */
+.snapshot-modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
+    background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(8px);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    z-index: 9999; padding: 20px; animation: fadeIn 0.3s ease;
+}
+.snapshot-img {
+    max-width: 100%; max-height: 78vh; border: 2px solid var(--gold);
+    box-shadow: 0 0 30px var(--gold-glow); object-fit: contain;
+}
+.snapshot-tip {
+    color: var(--gold); font-size: 14px; margin-top: 15px; letter-spacing: 2px;
+    text-shadow: 0 0 8px var(--gold-glow); font-weight: bold;
+}
+.snapshot-close {
+    margin-top: 12px; background: transparent; border: 1px solid var(--text-sub);
+    color: var(--text-sub); padding: 6px 20px; cursor: pointer; font-family: inherit;
+}
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+<div class="gothic-frame">
+    <!-- 四角雕花 -->
+    <div class="corner c-tl"></div><div class="corner c-tr"></div>
+    <div class="corner c-bl"></div><div class="corner c-br"></div>
+
+    <div class="top-bar">
+        <div class="brand">⚖️ LIBRA ANIMAE</div>
+        <button class="theme-btn" id="theme-btn" onclick="toggleTheme()">☀️ 圣殿模式</button>
+    </div>
+
+    <!-- 1. 哥特风封面 -->
+    <div id="cover-screen">
+        <div class="sigil-box">
+            <svg class="sigil-svg" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" stroke-dasharray="4 2"/>
+                <circle cx="50" cy="50" r="38"/>
+                <!-- 七芒星路径 -->
+                <polygon points="50,12 66,80 15,38 85,38 34,80" stroke-width="1"/>
+                <polygon points="50,88 34,20 85,62 15,62 66,20" stroke-width="0.8" opacity="0.6"/>
+            </svg>
+<div class="sigil-eye">👁️</div>
+        </div>
+        <div class="cover-sub">SEVEN SINS & SEVEN VIRTUES</div>
+        <div class="cover-title">深渊与救赎</div>
+        <div class="cover-lore">
+            凡人的灵魂皆在【七宗罪】的深渊边缘游走，唯有【七美德】的圣光能将其救赎。<br>
+            直面以下 20 道灵魂拷问，审判之眼将凝视你内心最深处的本能。
+        </div>
+
+        <div class="duality-grid">
+            <span class="sin-txt">LUST 色欲</span><span class="vs-txt">⚔️</span><span class="vir-txt">贞洁 CHASTITY</span>
+            <span class="sin-txt">GLUTTONY 暴食</span><span class="vs-txt">⚔️</span><span class="vir-txt">节制 TEMPERANCE</span>
+            <span class="sin-txt">GREED 贪婪</span><span class="vs-txt">⚔️</span><span class="vir-txt">慷慨 CHARITY</span>
+            <span class="sin-txt">SLOTH 懒惰</span><span class="vs-txt">⚔️</span><span class="vir-txt">勤奋 DILIGENCE</span>
+            <span class="sin-txt">WRATH 暴怒</span><span class="vs-txt">⚔️</span><span class="vir-txt">耐心 PATIENCE</span>
+            <span class="sin-txt">ENVY 嫉妒</span><span class="vs-txt">⚔️</span><span class="vir-txt">仁慈 KINDNESS</span>
+            <span class="sin-txt">PRIDE 傲慢</span><span class="vs-txt">⚔️</span><span class="vir-txt">谦逊 HUMILITY</span>
+        </div>
+
+        <button class="gothic-btn" onclick="startQuiz()">开启灵魂审判</button>
+    </div>
+
+    <!-- 2. 答题界面 -->
+    <div id="quiz-screen">
+        <div class="progress-info">
+            <span>SOUL INQUISITION</span>
+            <span id="q-counter">I / XX</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progress-bar"></div></div>
+
+        <div class="quiz-view" id="quiz-box">
+            <div class="q-title" id="q-text"></div>
+            <div class="options-list" id="opt-box"></div>
+        </div>
+
+        <div class="nav-footer">
+            <button class="prev-btn" id="prev-btn" onclick="prevQuestion()">◁ 逆转时光 (上一题)</button>
+            <span style="font-size: 11px; color: var(--text-sub); letter-spacing: 1px;">抉择即命运</span>
+        </div>
+    </div>
+
+   <!-- 3. 审判结果界面 (豪华升级版) -->
+    <div id="result-screen">
+        <div class="res-badge">JUDGMENT COMPLETED · 灵魂审判书</div>
+        
+        <div class="tarot-header">
+            <div class="soul-rank" id="res-rank">SOUL TIER</div>
+            <div class="res-title" id="res-name"></div>
+            <div class="sin-suppressed" id="res-sin" style="margin-bottom:0;"></div>
+        </div>
+
+        <!-- 宗教神秘学属性三联卡 -->
+        <div class="meta-grid">
+            <div class="meta-card"><div class="meta-label">守护大天使</div><div class="meta-val" id="res-angel"></div></div>
+            <div class="meta-card"><div class="meta-label">次生副美德</div><div class="meta-val" id="res-sub-virtue"></div></div>
+            <div class="meta-card"><div class="meta-label">残存深渊隐患</div><div class="meta-val" id="res-weakness" style="color:var(--crimson);"></div></div>
+        </div>
+
+        <div class="res-desc" id="res-desc"></div>
+
+        <!-- 七芒星灵魂雷达图 + 能量条双视图 -->
+        <div class="Visual-split">
+            <div class="radar-box" id="radar-container"></div>
+            <div id="stats-container"></div>
+        </div>
+
+        <!-- 圣典箴言 -->
+        <div class="quote-box" id="res-quote"></div>
+
+        <div class="btn-group">
+           <button class="gothic-btn" onclick="copyReport()" id="copy-btn" style="padding: 14px 10px; font-size:14px;">📜 铭刻判词</button>
+            <button class="gothic-btn" onclick="location.reload()" style="padding: 14px 10px; font-size:14px; background:transparent;">🔄 重入轮回</button>
+        </div>
+    </div>
+
+<script>
+const virtues = {
+    C: { name: "贞洁 · CHASTITY", sin: "已斩断原罪：【色欲 LUST】", desc: "在污浊的世俗洪流中，你拥有高洁而纯粹的灵魂。肉体的欢愉与低级的诱惑无法动摇你的意志，你近乎偏执地守护着精神圣殿的纯洁与绝对忠诚。" },
+    T: { name: "节制 · TEMPERANCE", sin: "已斩断原罪：【暴食 GLUTTONY】", desc: "你是欲望的绝对支配者。面对无尽的贪求与放纵，你心中自有一座精密的圣洁天平。克制、冷静、理智，你永远不会让自己沦为本能的奴隶。" },
+    Ch:{ name: "慷慨 · CHARITY", sin: "已斩断原罪：【贪婪 GREED】", desc: "你的灵魂闪耀着牺牲与博爱的金光。世人皆在疯狂掠夺，唯有你甘愿散尽所有去温暖寒夜中的行者。你的富有不在于占有，而在于无私的赐予。" },
+    D: { name: "勤奋 · DILIGENCE", sin: "已斩断原罪：【懒惰 SLOTH】", desc: "你是永不停歇的苦行者。安逸与颓废无法腐蚀你的钢铁意志，你用汗水与执着作为对抗虚无的武器，在荆棘密布的命运之路上劈开属于自己的黎明。" },
+    P: { name: "耐心 · PATIENCE", sin: "已斩断原罪：【暴怒 WRATH】", desc: "你的胸怀如同深不见底的古井，任何狂风暴雨都无法掀起波澜。当世人被愤怒吞噬理智时，你选择用沉默的宽容与漫长的守望，化解一切戾气与灾厄。" },
+    K: { name: "仁慈 · KINDNESS", sin: "已斩断原罪：【嫉妒 ENVY】", desc: "你拥有神明般的悲悯与共情。你从不用恶毒的眼光审视他人的辉煌，而是化作春风去抚平弱者的伤痛。在冰冷残酷的世间，你是唯一的救赎之光。" },
+    H: { name: "谦逊 · HUMILITY", sin: "已斩断原罪：【傲慢 PRIDE】", desc: "你深知凡人的渺小，因而拥有最深邃的智慧。王冠与赞美无法让你迷失，你始终向未知与天地低下高贵的头颅。正因你不居高临下，万物才皆为你所用。" }
+};
+const extraLore = {
+    C: { angel: "加百列 · Gabriel", rank: "纯白炽天使 (SERAPH)", quote: "“凡清心的人有福了，因为他们必得见神。”" },
+    T: { angel: "拉斐尔 · Raphael", rank: "翡翠智天使 (CHERUB)", quote: "“征服世界者，不如征服自己之欲望。”" },
+    Ch:{ angel: "约菲尔 · Jophiel", rank: "黄金座天使 (THRONE)", quote: "“施比受更为有福，散尽者终将拥有永恒。”" },
+    D: { angel: "乌列尔 · Uriel", rank: "烈焰力天使 (VIRTUE)", quote: "“黑夜无论怎样漫长，白昼总会到来。”" },
+    P: { angel: "卡麦尔 · Camael", rank: "磐石能天使 (POWER)", quote: "“柔和的舌头能折断骨头，忍耐可化解万千灾厄。”" },
+    K: { angel: "萨麦尔 · Zadkiel", rank: "圣光主天使 (DOMINION)", quote: "“怜悯原是向审判夸胜，慈悲是灵魂最高贵的冠冕。”" },
+    H: { angel: "米迦勒 · Michael", rank: "谦卑大天使 (ARCHANGEL)", quote: "“凡自高的必降为卑，自卑的必升为高。”" }
+};
+
+const qData = [
+    ["当意外获得一笔巨额横财时，你灵魂深处的第一本能是？", ["将其分予穷苦之人或与挚爱共享", "Ch"], ["封存起来，按原有节奏克制地使用", "T"], ["告诫自己这只是命运的馈赠，切不可狂妄", "H"]],
+    ["在决定生死的团队试炼中，同伴因失误拖累了全队，你会？", ["压下怒火，沉默地给他时间去弥补过错", "P"], ["毫无怨言，替他背负起双倍的重担继续前行", "D"], ["温和地宽慰他，抚平他内心的恐惧与自责", "K"]],
+    ["面对散发着致命诱惑的饕餮盛宴，你的选择是？", ["浅尝辄止，绝不让口腹之欲控制身体", "T"], ["先将最珍贵的佳肴递给身旁的同行者", "K"], ["视物质享受如粪土，更渴望精神上的共鸣", "C"]],
+    ["当昔日的同行者登上了远超于你的荣耀王座，你会？", ["毫无嫉恨，在台下为他献上最真诚的赞美", "K"], ["审视自身的不足，放下身段向他请教登顶之道", "H"], ["将不甘化作燃料，日夜苦修以求迎头赶上", "D"]],
+    ["身处无人打扰的漫长孤寂之夜，你通常会如何度过？", ["冥想、阅读，在纯粹的精神世界里自我净化", "C"], ["打磨技艺，不允许自己浪费一分一秒的光阴", "D"], ["严格遵循既定的律令作息，绝不放纵熬夜", "T"]],
+    ["前路被巨石堵死，而审判的钟声即将敲响，你会？", ["闭目养神，既然无法改变，便平静等待命运降临", "P"], ["反省自己为何没有提前探明道路，引以为戒", "H"], ["哪怕双手流血，也要争分夺秒地尝试搬开巨石", "D"]],
+    ["目睹世人用最恶毒的诅咒围攻一名无辜者时，你会？", ["移开视线，不让这些污言秽语玷污自己的灵魂", "C"], ["洞察暴徒背后的愚昧与苦楚，不以暴制暴", "P"], ["穿过人群，为那名遍体鳞伤的无辜者披上外衣", "K"]],
+    ["面对一项需要耗费十年心血且枯燥至极的使命，你会？", ["如钟表般精准，日复一日地挥洒汗水直至终结", "D"], ["心如止水，甘愿在漫长的岁月中寂寞地等待花开", "P"], ["斩断尘世间一切娱乐与情欲的干扰，孤注一掷", "C"]],
+    ["当众生将你奉若神明、献上无数赞歌时，你的内心是？", ["诚惶诚恐，认为荣耀属于众人，自己只是凡胎", "H"], ["温和地回应众人，并将赞美回馈给每一个支持者", "K"], ["极度冷静，深知捧杀的危险，依然严于律己", "T"]],
+    ["在寒冬的街角遇到衣不蔽体的乞讨者，你会？", ["倾囊相助，哪怕自己接下来也要忍受饥寒", "Ch"], ["不仅给予钱财，更弯下腰给予他生而为人的尊严", "K"], ["感念世事无常，警惕自己平时绝不可奢靡浪费", "T"]],
+    ["与灵魂伴侣爆发足以摧毁关系的激烈冲突时，你会？", ["死死咬住嘴唇，在怒火平息前绝不吐出一句恶言", "P"], ["率先垂下头颅，反思自己在这场风暴中的罪责", "H"], ["哪怕关系破裂，也绝不寻求第三者的肉体或精神慰藉", "C"]],
+    ["面对一件能瞬间提升地位、但需要透支未来的魔器，你会？", ["果断斩断贪念，拒绝超出能力范围的欲望", "T"], ["发誓用加倍的苦修与劳作，去换取匹配它的实力", "D"], ["认为外物的加持皆是虚妄，唯有自身的纯粹最重要", "C"]],
+    ["当一个愚钝的初学者反复向你请教极其浅显的奥秘时，你会？", ["不厌其烦地引导他，哪怕重复百遍也毫无怨言", "P"], ["毫无保留地将自己毕生所学与秘籍全部赠予他", "Ch"], ["平视他的困惑，内心毫无高高在上的轻蔑之感", "H"]],
+    ["在你眼中，世间最极致的“爱”应当是何种形态？", ["绝对的灵魂洁癖，一生一世不染一丝尘埃的专一", "C"], ["如同飞蛾扑火般的奉献，哪怕燃烧自己也要照亮对方", "Ch"], ["在漫长而残酷的岁月里，包容对方一切丑陋与不堪", "P"]],
+    ["肉体已达极限、濒临崩溃，但使命还差最后一步，你会？", ["榨干最后一滴血汗，倒下前也必须完成使命", "D"], ["理性审视极限，暂缓脚步，不做无谓的自我毁灭", "T"], ["若放弃会连累他人，为了不成为别人的枷锁而强撑到底", "K"]],
+    ["回首过往的辉煌战绩，你认为自己赖以生存的根本是？", ["比常人多付出的百倍鲜血、汗水与不眠之夜", "D"], ["命运的垂青与他人的扶持，自己不过是侥幸罢了", "H"], ["对欲望的冷酷克制，让自己从未踏入毁灭的歧途", "T"]],
+    ["挚友向你索要你视若生命的传家之宝以渡难关，你会？", ["双手奉上，认为情谊的重量远超世间一切死物", "Ch"], ["温柔地嘱托他妥善保管，毫无保留地选择信任", "K"], ["即便他最终不慎将其损毁，也绝不因此向他挥刀", "P"]],
+    ["身处欲望横流、人人皆走捷径的堕落之城，你会？", ["化身孤高白鸽，宁可步履维艰，绝不沾染一丝污垢", "C"], ["坚信唯有双手创造的果实最踏实，一步一脚印前行", "D"], ["冷眼旁观繁华，精准控制自己的欲望边界，片叶不沾身", "T"]],
+    ["当你猛然惊觉自己曾冤枉并伤害了一个无辜的灵魂，你会？", ["剥下高傲的面具，跪倒在他面前祈求原谅", "H"], ["倾尽所有去补偿他，哪怕付出百倍的代价也在所不惜", "Ch"], ["灵魂陷入深深的自责，从此对待世人更加轻柔与慈悲", "K"]],
+    ["当死神的镰刀架在脖颈，你希望墓志铭上如何镌刻你的一生？", ["“此人灵魂纯粹如初雪，从未向世俗的污秽妥协。”", "C"], ["“此人散尽一生光热，在黑暗中庇护了无数迷途羔羊。”", "Ch"], ["“此人一生敬畏天地，温和谦卑，从未有过半分狂妄。”", "H"]]
+];
+
+const romans = ["I","II","III","IV","V","VI","VII","VIII","IX","X","XI","XII","XIII","XIV","XV","XVI","XVII","XVIII","XIX","XX"];
+let curIdx = 0, userAnswers = [], isAnimating = false;
+
+function startQuiz() {
+    document.getElementById('cover-screen').style.display = 'none';
+    document.getElementById('quiz-screen').style.display = 'block';
+    renderQuestion();
+}
+
+function renderQuestion() {
+    const item = qData[curIdx];
+    document.getElementById('q-counter').innerText = `${romans[curIdx]} / XX`;
+    document.getElementById('progress-bar').style.width = `${((curIdx + 1) / qData.length) * 100}%`;
+    document.getElementById('prev-btn').style.visibility = curIdx === 0 ? 'hidden' : 'visible';
+
+    document.getElementById('q-text').innerText = `${romans[curIdx]}. ${item[0]}`;
+    const optBox = document.getElementById('opt-box');
+    optBox.innerHTML = '';
+
+    const nums = ['Ⅰ', 'Ⅱ', 'Ⅲ'];
+    for (let i = 1; i <= 3; i++) {
+        const [optText, optType] = item[i];
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn' + (userAnswers[curIdx] === optType ? ' selected' : '');
+        btn.innerHTML = `<span class="opt-num">${nums[i-1]}</span><span>${optText}</span>`;
+        btn.onclick = () => selectOption(optType, btn);
+        optBox.appendChild(btn);
+    }
+}
+
+function selectOption(type, btnElement) {
+    if (isAnimating) return;
+    isAnimating = true;
+    Array.from(document.getElementById('opt-box').children).forEach(b => b.classList.remove('selected'));
+    btnElement.classList.add('selected');
+    userAnswers[curIdx] = type;
+
+    const quizBox = document.getElementById('quiz-box');
+    setTimeout(() => {
+        quizBox.classList.add('fade-out');
+        setTimeout(() => {
+            if (curIdx < qData.length - 1) {
+                curIdx++; renderQuestion(); quizBox.classList.remove('fade-out');
+            } else { showResult(); }
+            isAnimating = false;
+        }, 250);
+    }, 200);
+}
+
+function prevQuestion() {
+    if (curIdx > 0 && !isAnimating) {
+        isAnimating = true;
+        const quizBox = document.getElementById('quiz-box');
+        quizBox.classList.add('fade-out');
+        setTimeout(() => {
+            curIdx--; renderQuestion(); quizBox.classList.remove('fade-out');
+            isAnimating = false;
+        }, 200);
+    }
+}
+
+function showResult() {
+    document.getElementById('quiz-screen').style.display = 'none';
+    document.getElementById('result-screen').style.display = 'block';
+
+    const scores = { C: 0, T: 0, Ch: 0, D: 0, P: 0, K: 0, H: 0 };
+    userAnswers.forEach(ans => { if (scores[ans] !== undefined) scores[ans]++; });
+
+    const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+    const topKey = sorted[0][0];     // 主导美德
+    const secKey = sorted[1][0];     // 次生副美德
+    const lowKey = sorted[6][0];     // 最薄弱美德（对应残存原罪隐患）
+
+    // 填充基础与神秘学信息
+    document.getElementById('res-name').innerText = virtues[topKey].name;
+    document.getElementById('res-sin').innerText = virtues[topKey].sin;
+    document.getElementById('res-desc').innerText = virtues[topKey].desc;
+    document.getElementById('res-rank').innerText = extraLore[topKey].rank;
+    document.getElementById('res-angel').innerText = extraLore[topKey].angel;
+    document.getElementById('res-sub-virtue').innerText = virtues[secKey].name.split(' · ')[0] + "之魂";
+    document.getElementById('res-weakness').innerText = virtues[lowKey].sin.match(/【(.*)】/)[1];
+    document.getElementById('res-quote').innerText = extraLore[topKey].quote;
+
+    // 渲染右侧能量条
+    const statsContainer = document.getElementById('stats-container');
+    statsContainer.innerHTML = '';
+    sorted.forEach(([key, val]) => {
+        const pct = Math.round((val / qData.length) * 100);
+        statsContainer.innerHTML += `
+            <div class="stat-row">
+                <div class="stat-label"><span>${virtues[key].name.split(' · ')[0]}</span><span style="color:var(--gold)">${pct}%</span></div>
+                <div class="stat-bar-bg"><div class="stat-bar-fill" data-width="${pct}%"></div></div>
+            </div>`;
+    });
+
+    // 动态绘制左侧 SVG 七芒星灵魂雷达图
+    drawRadarChart(scores);
+
+    setTimeout(() => {
+        document.querySelectorAll('.stat-bar-fill').forEach(bar => bar.style.width = bar.getAttribute('data-width'));
+    }, 100);
+}
+// 3. 新增：绘制纯 SVG 哥特雷达图函数
+function drawRadarChart(scores) {
+    const keys = ['C', 'T', 'Ch', 'D', 'P', 'K', 'H'];
+    const labels = ['贞洁', '节制', '慷慨', '勤奋', '耐心', '仁慈', '谦逊'];
+    const cx = 90, cy = 90, maxR = 62;
+    let gridHtml = '', points = [], labelHtml = '';
+
+    // 绘制3层蛛网背景
+    [0.35, 0.7, 1].forEach(scale => {
+        let pts = keys.map((_, i) => {
+            let a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
+            return `${cx + maxR * scale * Math.cos(a)},${cy + maxR * scale * Math.sin(a)}`;
+        }).join(' ');
+        gridHtml += `<polygon points="${pts}" fill="none" stroke="var(--border-col)" stroke-width="1"/>`;
+    });
+
+    // 计算玩家数据点与文字标签坐标
+    keys.forEach((k, i) => {
+        let a = (Math.PI * 2 * i) / 7 - Math.PI / 2;
+        let valRatio = Math.min((scores[k] || 0.5) / 7, 1); // 封顶7分占比满分
+        let r = maxR * Math.max(valRatio, 0.15);
+        points.push(`${cx + r * Math.cos(a)},${cy + r * Math.sin(a)}`);
+        
+        // 轴线与顶点文字
+        let lx = cx + (maxR + 16) * Math.cos(a), ly = cy + (maxR + 16) * Math.sin(a);
+        gridHtml += `<line x1="${cx}" y1="${cy}" x2="${cx + maxR * Math.cos(a)}" y2="${cy + maxR * Math.sin(a)}" stroke="var(--border-col)" stroke-dasharray="2 2"/>`;
+        labelHtml += `<text x="${lx}" y="${ly}" fill="var(--gold)" font-size="10" text-anchor="middle" dominant-baseline="middle">${labels[i]}</text>`;
+    });
+
+    document.getElementById('radar-container').innerHTML = `
+        <svg viewBox="0 0 180 180" width="100%" height="100%">
+            ${gridHtml}
+            <polygon points="${points.join(' ')}" fill="rgba(220, 20, 60, 0.35)" stroke="var(--gold)" stroke-width="2"/>
+            ${labelHtml}
+        </svg>`;
+}
+
+// 4. 升级版：将整个哥特审判框拓印为高清图片并保存
+function copyReport() {
+    const btn = document.getElementById('copy-btn');
+    const btnGroup = document.querySelector('.btn-group');
+    const frame = document.querySelector('.gothic-frame');
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+
+    btn.innerText = "⏳ 正在拓印灵魂判词...";
+    btn.disabled = true;
+
+    // 截图瞬间隐藏底部按钮，让生成的塔罗审判图更纯粹美观
+    btnGroup.style.opacity = '0';
+
+    html2canvas(frame, {
+        scale: 2, // 2倍超清视网膜画质
+        useCORS: true,
+        backgroundColor: isDark ? '#0d0910' : '#f5efe6' // 自动适配深渊/圣殿底色
+    }).then(canvas => {
+        btnGroup.style.opacity = '1';
+        btn.disabled = false;
+        
+        const imgUrl = canvas.toDataURL('image/png');
+        const virtueName = document.getElementById('res-name').innerText.split(' · ')[0];
+
+        // 1. 触发浏览器直接下载图片 (PC端 & 安卓端直接生效)
+        const link = document.createElement('a');
+        link.download = `灵魂审判书_${virtueName}.png`;
+        link.href = imgUrl;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        btn.innerText = "✔️ 判词拓印已降临";
+        setTimeout(() => btn.innerText = "📜 铭刻判词", 3000);
+
+        // 2. 若为手机端(尤其是iOS)，同时弹出图片预览层，支持“长按直接保存到手机相册”
+        if (/Mobi|Android|iPhone|iPad/i.test(navigator.userAgent)) {
+            const modal = document.createElement('div');
+            modal.className = 'snapshot-modal';
+            modal.innerHTML = `
+                <img src="${imgUrl}" class="snapshot-img" alt="灵魂审判书"/>
+                <div class="snapshot-tip">✨ 请长按上方羊皮卷保存到相册 ✨</div>
+                <button class="snapshot-close" onclick="this.parentElement.remove()">关闭法阵</button>
+            `;
+            document.body.appendChild(modal);
+        }
+    }).catch(err => {
+        console.error(err);
+        btnGroup.style.opacity = '1';
+        btn.disabled = false;
+        btn.innerText = "❌ 拓印受阻，请重试";
+    });
+}
+// 圣殿(日间) 与 深渊(夜间) 模式切换
+function toggleTheme() {
+    const html = document.documentElement;
+    const btn = document.getElementById('theme-btn');
+    if (html.getAttribute('data-theme') === 'dark') {
+        html.removeAttribute('data-theme');
+        btn.innerHTML = '🌙 深渊模式';
+    } else {
+        html.setAttribute('data-theme', 'dark');
+        btn.innerHTML = '☀️ 圣殿模式';
+    }
+}
+</script>
+</body>
+</html>
